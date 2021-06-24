@@ -10,6 +10,6 @@ app.get("/", function (req: any, res: any) {
   res.send("Geobench API server");
 });
 
-benches();
+benches(app);
 
 app.listen(process.env.EXPRESS_PORT);
