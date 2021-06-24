@@ -18,8 +18,9 @@
   "author": "MisterGoodDeal",
   "license": "ISC",
   "dependencies": {
+    "@types/mysql": "^2.15.18",
     "express": "^4.17.1",
-    "mysql": "^2.18.1",
+    "mysql2": "^2.2.5",
     "prettier": "^2.3.1"
   },
   "devDependencies": {
