@@ -1,4 +1,4 @@
-import { benches } from "./routes/bench";
+import { benches } from "./routes/benches";
 const env = require("dotenv").config();
 
 var express = require("express");
