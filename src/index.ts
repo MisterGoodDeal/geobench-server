@@ -1,10 +1,13 @@
 import { benches } from "./routes/benches";
 import { user } from "./routes/user";
-import { returnCode } from "./utils/returnCodes";
 const env = require("dotenv").config();
 
-var express = require("express");
-var app = express();
+const express = require("express");
+const bodyParser = require("body-parser");
+const app = express();
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(bodyParser.raw());
 app.disable("etag"); // No caching
 
 app.get("/", function (req: any, res: any) {
