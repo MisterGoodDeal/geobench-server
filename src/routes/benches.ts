@@ -1,5 +1,6 @@
-import { db } from "../db"; // Gestionnaire de base de donnée
-import { returnCode } from "../utils/returnCodes"; // Gestionnaire de code de retour
+import { db } from "../db";
+import { returnCode } from "../utils/returnCodes";
+import { user } from "../utils/user";
 const env = require("dotenv").config();
 
 interface Banc {
@@ -16,6 +17,10 @@ interface Banc {
 }
 
 export const benches = (app: any) => {
+  /**
+   * Route permettant de récupérer un JSON avec tous les bancs depuis la base de donnée
+   * !! Nécessite l'authentification avec le header `x-auth` !!
+   */
   app.get("/bancs", async function (req: any, res: any) {
     const benches: Banc[] = [];
     if (req.get("x-auth") === undefined) {
@@ -24,6 +29,11 @@ export const benches = (app: any) => {
         .json(returnCode.unauthorized.payload);
     } else {
       try {
+        if (!(await user.exists(parseInt(req.get("x-auth"))))) {
+          res
+            .status(returnCode.unknownUser.code)
+            .json(returnCode.unknownUser.payload);
+        }
         const rows = await db.queryParams("SELECT * FROM `bancs` WHERE ?", [
           "1",
         ]);
@@ -43,7 +53,7 @@ export const benches = (app: any) => {
         });
         res.status(200).json(benches);
       } catch (error) {
-        console.log(`Erreur interne => ${error.message}`);
+        console.log(`Erreur interne GET/bancs => ${error.message}`);
         res
           .status(returnCode.internalError.code)
           .json(returnCode.internalError.payload);

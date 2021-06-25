@@ -1,4 +1,11 @@
 export const returnCode = {
+  unknownUser: {
+    code: 400,
+    payload: {
+      title: "unknown_user",
+      error: "Unknown users!",
+    },
+  },
   unauthorized: {
     code: 401,
     payload: {
