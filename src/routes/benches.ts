@@ -1,5 +1,5 @@
 import { db } from "../db";
-import { returnCode } from "../utils/returnCodes";
+import { Res, returnCode } from "../utils/returnCodes";
 import { user } from "../utils/user";
 const env = require("dotenv").config();
 
@@ -21,7 +21,7 @@ export const benches = (app: any) => {
    * Route permettant de récupérer un JSON avec tous les bancs depuis la base de donnée
    * !! Nécessite l'authentification avec le header `x-auth` !!
    */
-  app.get("/bancs", async function (req: any, res: any) {
+  app.get("/bancs", async function (req: any, res: Res) {
     const benches: Banc[] = [];
     if (req.get("x-auth") === undefined) {
       res
