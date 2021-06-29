@@ -11,3 +11,7 @@ export const generateRandomString = (len?: number): string => {
 
   return result;
 };
+
+export const addslashes = (str: string) => {
+  return (str + "").replace(/([\\"'])/g, "\\$1").replace(/\0/g, "\\0");
+};
