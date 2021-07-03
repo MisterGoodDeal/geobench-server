@@ -6,6 +6,13 @@ export const returnCode = {
       message: "Missing parameters!",
     },
   },
+  wrongOTP: {
+    code: 400,
+    payload: {
+      title: "wrong_otp",
+      message: "One Time Password is incorrect!",
+    },
+  },
   unknownUser: {
     code: 400,
     payload: {

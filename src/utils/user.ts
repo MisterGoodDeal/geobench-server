@@ -40,10 +40,15 @@ const checkRegisterUserExist = async (
   };
 };
 
+const generateReset6DigitCode = () => {
+  return Math.floor(100000 + Math.random() * 900000);
+};
+
 export const user = {
   exists: userExists,
   existsRegister: checkRegisterUserExist,
   info: getUserRegister,
+  resetCode: generateReset6DigitCode,
 };
 
 // Interfaces
@@ -78,4 +83,15 @@ export interface UserLogin {
 interface CheckUserRegisterExist {
   email: boolean;
   username: boolean;
+}
+
+export interface UserResetPassword {
+  lang: string;
+  email: string;
+}
+
+export interface UserCheckOTPAndReset {
+  email: string;
+  code: string;
+  password: string;
 }
