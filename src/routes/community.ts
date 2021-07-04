@@ -47,7 +47,7 @@ export const community = (app: any) => {
           );
 
           res.status(200).json({
-            gobal: {
+            global: {
               usersCount: usersCount[0].usersCount,
               benchCount: benchCount[0].benchCount,
               photosCount: photosCount[0].photosCount,
