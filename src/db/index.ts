@@ -4,12 +4,14 @@ const mysql = require("mysql2/promise");
 async function queryWithoutParams(sql: string) {
   const connection = await mysql.createConnection(config.db);
   const [results] = await connection.execute(sql);
+  connection.end()
 
   return results;
 }
 async function queryWithParams(sql: string, params: any) {
   const connection = await mysql.createConnection(config.db);
   const [results] = await connection.execute(sql, params);
+  connection.end();
 
   return results;
 }
