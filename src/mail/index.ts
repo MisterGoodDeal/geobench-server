@@ -1,3 +1,5 @@
+import { log } from "../db/logger";
+
 const env = require("dotenv").config();
 const nodemailer = require("nodemailer");
 
@@ -14,9 +16,9 @@ const transporter = nodemailer.createTransport({
 export const transporterTest = () => {
   transporter.verify(function (error: any, success: any) {
     if (error) {
-      console.log(error);
+      log(error);
     } else {
-      console.log("Server is ready to take our messages");
+      log("Server is ready to take our messages");
     }
   });
 };
@@ -44,9 +46,9 @@ export const sendMail = async (
 
   transport.sendMail(message, function (err: any, info: any) {
     if (err) {
-      console.log(err);
+      log(err);
     } else {
-      console.log(info);
+      log(info);
     }
   });
 };

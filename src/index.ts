@@ -1,3 +1,4 @@
+import { log } from "./db/logger";
 import { benches } from "./routes/benches";
 import { community } from "./routes/community";
 import { user } from "./routes/user";
@@ -12,6 +13,7 @@ app.use(bodyParser.raw());
 app.disable("etag"); // No caching
 
 app.get("/", function (req: any, res: any) {
+  log({ "greengo-server": { version: "1.0.0" } });
   res.status(200).json({ "greengo-server": { version: "1.0.0" } });
 });
 

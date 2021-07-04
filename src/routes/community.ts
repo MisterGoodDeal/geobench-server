@@ -1,4 +1,5 @@
 import { db } from "../db";
+import { log } from "../db/logger";
 import { Res, returnCode } from "../utils/returnCodes";
 import { user } from "../utils/user";
 const env = require("dotenv").config();
@@ -68,7 +69,7 @@ export const community = (app: any) => {
           });
         }
       } catch (error) {
-        console.log(`Erreur interne GET/bancs => ${error.message}`);
+        log(`Erreur interne GET/bancs => ${error.message}`, req.get("x-auth"));
         res
           .status(returnCode.internalError.code)
           .json(returnCode.internalError.payload);

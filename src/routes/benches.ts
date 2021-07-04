@@ -1,4 +1,5 @@
 import { db } from "../db";
+import { log } from "../db/logger";
 import { AddBenchBody, AddCommentBody } from "../utils/benches";
 import { addslashes } from "../utils/helpers";
 import { Res, returnCode } from "../utils/returnCodes";
@@ -55,7 +56,7 @@ export const benches = (app: any) => {
         });
         res.status(200).json(benches);
       } catch (error) {
-        console.log(`Erreur interne GET/bancs => ${error.message}`);
+        log(`Erreur interne GET/bancs => ${error.message}`, req.get("x-auth"));
         res
           .status(returnCode.internalError.code)
           .json(returnCode.internalError.payload);
@@ -93,8 +94,9 @@ export const benches = (app: any) => {
           if (resQ.affectedRows >= 1) {
             res.status(200).json({ status: "ok" });
           } else {
-            console.log(
-              `Erreur base de donnée PUT/banc/commentaire => ${resQ}`
+            log(
+              `Erreur base de donnée PUT/banc/commentaire => ${resQ}`,
+              req.get("x-auth")
             );
             res
               .status(returnCode.internalError.code)
@@ -105,7 +107,10 @@ export const benches = (app: any) => {
 
         res.status(200).json({ status: "ok" });
       } catch (error) {
-        console.log(`Erreur interne PUT/banc/commentaire => ${error.message}`);
+        log(
+          `Erreur interne PUT/banc/commentaire => ${error.message}`,
+          req.get("x-auth")
+        );
         res
           .status(returnCode.internalError.code)
           .json(returnCode.internalError.payload);
@@ -171,7 +176,7 @@ export const benches = (app: any) => {
           res.status(200).json(queryR);
         }
       } catch (error) {
-        console.log(`Erreur interne POST/bancs => ${error.message}`);
+        log(`Erreur interne POST/bancs => ${error.message}`, req.get("x-auth"));
         res
           .status(returnCode.internalError.code)
           .json(returnCode.internalError.payload);

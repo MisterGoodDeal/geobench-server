@@ -1,5 +1,6 @@
 import { getLang } from "../constants/Lang";
 import { db } from "../db";
+import { log } from "../db/logger";
 import { sendMail } from "../mail";
 import { resetPassword } from "../mail/templates/resetPassword";
 import { generateRandomString } from "../utils/helpers";
@@ -54,7 +55,10 @@ export const user = (app: any) => {
           res.status(200).json(userJson);
         }
       } catch (error) {
-        console.log(`Erreur interne GET/user/info => ${error.message}`);
+        log(
+          `Erreur interne GET/user/info => ${error.message}`,
+          req.get("x-auth")
+        );
         res
           .status(returnCode.internalError.code)
           .json(returnCode.internalError.payload);
@@ -74,8 +78,9 @@ export const user = (app: any) => {
       !body.hasOwnProperty("password") ||
       !body.hasOwnProperty("username")
     ) {
-      console.log(
-        `Erreur POST/user/register => ${returnCode.missingParameters.payload.message}`
+      log(
+        `Erreur POST/user/register => ${returnCode.missingParameters.payload.message}`,
+        req.get("x-auth")
       );
       res
         .status(returnCode.missingParameters.code)
@@ -123,9 +128,12 @@ export const user = (app: any) => {
               user.reset_key,
             ]
           );
-          console.log(query);
+          log(query, req.get("x-auth"));
         } catch (error) {
-          console.log(`Erreur interne POST/user/register => ${error.message}`);
+          log(
+            `Erreur interne POST/user/register => ${error.message}`,
+            req.get("x-auth")
+          );
           res
             .status(returnCode.internalError.code)
             .json(returnCode.internalError.payload);
@@ -143,8 +151,9 @@ export const user = (app: any) => {
   app.post("/user/login", async function (req: any, res: Res) {
     const body: UserLogin = req.body;
     if (!body.hasOwnProperty("login") || !body.hasOwnProperty("password")) {
-      console.log(
-        `Erreur POST/user/login => ${returnCode.missingParameters.payload.message}`
+      log(
+        `Erreur POST/user/login => ${returnCode.missingParameters.payload.message}`,
+        req.get("x-auth")
       );
       res
         .status(returnCode.missingParameters.code)
@@ -176,8 +185,9 @@ export const user = (app: any) => {
   app.post("/user/reset", async function (req: any, res: Res) {
     const body: UserResetPassword = req.body;
     if (!body.hasOwnProperty("lang") || !body.hasOwnProperty("email")) {
-      console.log(
-        `Erreur POST/user/reset => ${returnCode.missingParameters.payload.message}`
+      log(
+        `Erreur POST/user/reset => ${returnCode.missingParameters.payload.message}`,
+        req.get("x-auth")
       );
       res
         .status(returnCode.missingParameters.code)
@@ -209,7 +219,10 @@ export const user = (app: any) => {
           res.status(200).json({ email: email, database: reqResetCode });
         }
       } catch (error) {
-        console.log(`Erreur interne GET/user/info => ${error.message}`);
+        log(
+          `Erreur interne GET/user/info => ${error.message}`,
+          req.get("x-auth")
+        );
         res
           .status(returnCode.internalError.code)
           .json(returnCode.internalError.payload);
@@ -227,8 +240,9 @@ export const user = (app: any) => {
       !body.hasOwnProperty("code") ||
       !body.hasOwnProperty("email")
     ) {
-      console.log(
-        `Erreur PUT/user/updatePassword => ${returnCode.missingParameters.payload.message}`
+      log(
+        `Erreur PUT/user/updatePassword => ${returnCode.missingParameters.payload.message}`,
+        req.get("x-auth")
       );
       res
         .status(returnCode.missingParameters.code)
@@ -255,8 +269,9 @@ export const user = (app: any) => {
           res.status(200).json(response);
         }
       } catch (error) {
-        console.log(
-          `Erreur interne PUT/user/updatePassword => ${error.message}`
+        log(
+          `Erreur interne PUT/user/updatePassword => ${error.message}`,
+          req.get("x-auth")
         );
         res
           .status(returnCode.internalError.code)
@@ -276,8 +291,9 @@ export const user = (app: any) => {
         .status(returnCode.unauthorized.code)
         .json(returnCode.unauthorized.payload);
     } else if (!body.hasOwnProperty("email")) {
-      console.log(
-        `Erreur PUT/user/email => ${returnCode.missingParameters.payload.message}`
+      log(
+        `Erreur PUT/user/email => ${returnCode.missingParameters.payload.message}`,
+        req.get("x-auth")
       );
       res
         .status(returnCode.missingParameters.code)
@@ -290,7 +306,10 @@ export const user = (app: any) => {
         );
         res.status(200).json(response);
       } catch (error) {
-        console.log(`Erreur interne PUT/user/email => ${error.message}`);
+        log(
+          `Erreur interne PUT/user/email => ${error.message}`,
+          req.get("x-auth")
+        );
         res
           .status(returnCode.internalError.code)
           .json(returnCode.internalError.payload);
@@ -312,8 +331,9 @@ export const user = (app: any) => {
       !body.hasOwnProperty("firstname") ||
       !body.hasOwnProperty("lastname")
     ) {
-      console.log(
-        `Erreur PUT/user/fullname => ${returnCode.missingParameters.payload.message}`
+      log(
+        `Erreur PUT/user/fullname => ${returnCode.missingParameters.payload.message}`,
+        req.get("x-auth")
       );
       res
         .status(returnCode.missingParameters.code)
@@ -326,7 +346,10 @@ export const user = (app: any) => {
         );
         res.status(200).json(response);
       } catch (error) {
-        console.log(`Erreur interne PUT/user/fullname => ${error.message}`);
+        log(
+          `Erreur interne PUT/user/fullname => ${error.message}`,
+          req.get("x-auth")
+        );
         res
           .status(returnCode.internalError.code)
           .json(returnCode.internalError.payload);
