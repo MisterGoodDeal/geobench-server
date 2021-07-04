@@ -1,4 +1,5 @@
 import { benches } from "./routes/benches";
+import { community } from "./routes/community";
 import { user } from "./routes/user";
 const env = require("dotenv").config();
 
@@ -16,5 +17,6 @@ app.get("/", function (req: any, res: any) {
 
 benches(app);
 user(app);
+community(app);
 
 app.listen(process.env.EXPRESS_PORT);
