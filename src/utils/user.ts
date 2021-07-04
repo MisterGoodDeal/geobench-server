@@ -95,3 +95,11 @@ export interface UserCheckOTPAndReset {
   code: string;
   password: string;
 }
+
+export interface UserChangeEmail {
+  email: string;
+}
+export interface UserChangeFullname {
+  firstname: string;
+  lastname: string;
+}

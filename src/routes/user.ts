@@ -8,6 +8,8 @@ import { Res, returnCode } from "../utils/returnCodes";
 import {
   User,
   user as userUtils,
+  UserChangeEmail,
+  UserChangeFullname,
   UserCheckOTPAndReset,
   UserLogin,
   UserRegister,
@@ -226,7 +228,7 @@ export const user = (app: any) => {
       !body.hasOwnProperty("email")
     ) {
       console.log(
-        `Erreur POST/user/updatePassword => ${returnCode.missingParameters.payload.message}`
+        `Erreur PUT/user/updatePassword => ${returnCode.missingParameters.payload.message}`
       );
       res
         .status(returnCode.missingParameters.code)
@@ -256,6 +258,75 @@ export const user = (app: any) => {
         console.log(
           `Erreur interne PUT/user/updatePassword => ${error.message}`
         );
+        res
+          .status(returnCode.internalError.code)
+          .json(returnCode.internalError.payload);
+      }
+    }
+  });
+
+  /**
+   * Route permettant de modifier l'adresse email
+   * !! Nécessite l'authentification avec le header `x-auth` !!
+   */
+  app.put("/user/email", async function (req: any, res: Res) {
+    const body: UserChangeEmail = req.body;
+    if (req.get("x-auth") === undefined) {
+      res
+        .status(returnCode.unauthorized.code)
+        .json(returnCode.unauthorized.payload);
+    } else if (!body.hasOwnProperty("email")) {
+      console.log(
+        `Erreur PUT/user/email => ${returnCode.missingParameters.payload.message}`
+      );
+      res
+        .status(returnCode.missingParameters.code)
+        .json(returnCode.missingParameters.payload);
+    } else {
+      try {
+        const response = await db.queryParams(
+          "UPDATE `users` SET `mail`=? WHERE `id` = ?",
+          [body.email, req.get("x-auth")]
+        );
+        res.status(200).json(response);
+      } catch (error) {
+        console.log(`Erreur interne PUT/user/email => ${error.message}`);
+        res
+          .status(returnCode.internalError.code)
+          .json(returnCode.internalError.payload);
+      }
+    }
+  });
+
+  /**
+   * Route permettant de modifier le nom et le prénom
+   * !! Nécessite l'authentification avec le header `x-auth` !!
+   */
+  app.put("/user/fullname", async function (req: any, res: Res) {
+    const body: UserChangeFullname = req.body;
+    if (req.get("x-auth") === undefined) {
+      res
+        .status(returnCode.unauthorized.code)
+        .json(returnCode.unauthorized.payload);
+    } else if (
+      !body.hasOwnProperty("firstname") ||
+      !body.hasOwnProperty("lastname")
+    ) {
+      console.log(
+        `Erreur PUT/user/fullname => ${returnCode.missingParameters.payload.message}`
+      );
+      res
+        .status(returnCode.missingParameters.code)
+        .json(returnCode.missingParameters.payload);
+    } else {
+      try {
+        const response = await db.queryParams(
+          "UPDATE `users` SET `prenom` = ?, `nom` = ? WHERE `id` = ?",
+          [body.firstname, body.lastname, req.get("x-auth")]
+        );
+        res.status(200).json(response);
+      } catch (error) {
+        console.log(`Erreur interne PUT/user/fullname => ${error.message}`);
         res
           .status(returnCode.internalError.code)
           .json(returnCode.internalError.payload);
