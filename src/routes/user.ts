@@ -379,8 +379,8 @@ export const user = (app: any) => {
     } else {
       try {
         const response = await db.queryParams(
-          "UPDATE `users` SET `favoris` = ?",
-          [body.favoris]
+          "UPDATE `users` SET `favoris` = ? WHERE `id` = ?",
+          [body.favoris, req.get("x-auth")]
         );
         res.status(200).json(response);
       } catch (error) {
