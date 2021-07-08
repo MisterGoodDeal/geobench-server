@@ -103,3 +103,6 @@ export interface UserChangeFullname {
   firstname: string;
   lastname: string;
 }
+export interface UserChangeFav {
+  favoris: string;
+}

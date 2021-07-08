@@ -10,6 +10,7 @@ import {
   User,
   user as userUtils,
   UserChangeEmail,
+  UserChangeFav,
   UserChangeFullname,
   UserCheckOTPAndReset,
   UserLogin,
@@ -343,6 +344,43 @@ export const user = (app: any) => {
         const response = await db.queryParams(
           "UPDATE `users` SET `prenom` = ?, `nom` = ? WHERE `id` = ?",
           [body.firstname, body.lastname, req.get("x-auth")]
+        );
+        res.status(200).json(response);
+      } catch (error) {
+        log(
+          `Erreur interne PUT/user/fullname => ${error.message}`,
+          req.get("x-auth")
+        );
+        res
+          .status(returnCode.internalError.code)
+          .json(returnCode.internalError.payload);
+      }
+    }
+  });
+
+  /**
+   * Route permettant de mettre à jour les favoris des utilisateurs
+   * !! Nécessite l'authentification avec le header `x-auth` !!
+   */
+  app.put("/user/favoris", async function (req: any, res: Res) {
+    const body: UserChangeFav = req.body;
+    if (req.get("x-auth") === undefined) {
+      res
+        .status(returnCode.unauthorized.code)
+        .json(returnCode.unauthorized.payload);
+    } else if (!body.hasOwnProperty("favoris")) {
+      log(
+        `Erreur PUT/user/fullname => ${returnCode.missingParameters.payload.message}`,
+        req.get("x-auth")
+      );
+      res
+        .status(returnCode.missingParameters.code)
+        .json(returnCode.missingParameters.payload);
+    } else {
+      try {
+        const response = await db.queryParams(
+          "UPDATE `users` SET `favoris` = ?",
+          [body.favoris]
         );
         res.status(200).json(response);
       } catch (error) {
