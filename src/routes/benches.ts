@@ -102,7 +102,6 @@ export const benches = (app: any) => {
               .status(returnCode.internalError.code)
               .json(returnCode.internalError.payload);
           }
-          res.status(200).json(addslashes(resQ));
         }
 
         res.status(200).json({ status: "ok" });
