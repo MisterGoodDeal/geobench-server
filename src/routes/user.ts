@@ -113,7 +113,7 @@ export const user = (app: any) => {
           pseudo: body.username,
           mail: body.email,
           mdp: hashed,
-          favoris: "",
+          favoris: "[]",
           reset_key: generateRandomString(32),
         };
         try {
