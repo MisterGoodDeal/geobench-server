@@ -91,7 +91,11 @@ export const user = (app: any) => {
         body.email,
         body.username
       );
-      if (userRegisterExists.email || userRegisterExists.username) {
+      if (
+        userRegisterExists.email ||
+        userRegisterExists.username ||
+        body.email === "Geobench"
+      ) {
         if (userRegisterExists.email && userRegisterExists.username) {
           res
             .status(returnCode.alreadyUser.both.code)
@@ -129,7 +133,11 @@ export const user = (app: any) => {
               user.reset_key,
             ]
           );
+
           log(query, req.get("x-auth"));
+          res
+            .status(returnCode.userCreated.code)
+            .json(returnCode.userCreated.payload);
         } catch (error) {
           log(
             `Erreur interne POST/user/register => ${error.message}`,
@@ -140,9 +148,49 @@ export const user = (app: any) => {
             .json(returnCode.internalError.payload);
         }
       }
+    }
+  });
+
+  /**
+   * Route permettant de supprimer un utilisateur
+   * !! Nécessite l'authentification avec le header `x-auth` !!
+   */
+  app.post("/user/delete", async function (req: any, res: Res) {
+    if (req.get("x-auth") === undefined) {
       res
-        .status(returnCode.userCreated.code)
-        .json(returnCode.userCreated.payload);
+        .status(returnCode.unauthorized.code)
+        .json(returnCode.unauthorized.payload);
+    } else {
+      try {
+        if (!(await userUtils.exists(parseInt(req.get("x-auth"))))) {
+          res
+            .status(returnCode.unknownUser.code)
+            .json(returnCode.unknownUser.payload);
+        } else {
+          const row = await db.queryParams(
+            "UPDATE `users` SET`is_deleted`=1 WHERE `id` = ?",
+            [req.get("x-auth")]
+          );
+          const row2 = await db.queryParams(
+            "SELECT `pseudo` FROM `users` WHERE `id` = ?",
+            [req.get("x-auth")]
+          );
+          const row3 = await db.queryParams(
+            "UPDATE `bancs` SET `user`= 'Geobench' WHERE `user` = ?",
+            [row2[0].pseudo]
+          );
+
+          res.status(200).json({ row, row2, row3 });
+        }
+      } catch (error) {
+        log(
+          `Erreur interne POST/user/delete => ${error.message}`,
+          req.get("x-auth")
+        );
+        res
+          .status(returnCode.internalError.code)
+          .json(returnCode.internalError.payload);
+      }
     }
   });
 

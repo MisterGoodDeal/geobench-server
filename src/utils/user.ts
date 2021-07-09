@@ -27,11 +27,11 @@ const checkRegisterUserExist = async (
   username: string
 ): Promise<CheckUserRegisterExist> => {
   const mail = await db.queryParams(
-    "SELECT DISTINCT COUNT(*) as userExist FROM `users` WHERE `mail` = ?",
+    "SELECT DISTINCT COUNT(*) as userExist FROM `users` WHERE `mail` = ? AND is_deleted != 1",
     [email]
   );
   const pseudo = await db.queryParams(
-    "SELECT DISTINCT COUNT(*) as userExist FROM `users` WHERE `pseudo` = ?",
+    "SELECT DISTINCT COUNT(*) as userExist FROM `users` WHERE `pseudo` = ? AND is_deleted != 1",
     [username]
   );
   return {
