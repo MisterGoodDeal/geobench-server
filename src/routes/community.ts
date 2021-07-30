@@ -46,16 +46,26 @@ export const community = (app: any) => {
             "SELECT AVG(note) as avgBench FROM bancs FULL JOIN users ON `user` = users.pseudo WHERE users.id = ?",
             [req.get("x-auth")]
           );
+          const usersPictures = await db.queryParams(
+            "SELECT nom_photo as photo FROM bancs FULL JOIN users ON `user` = users.pseudo WHERE users.id = ? AND nom_photo != ''",
+            [req.get("x-auth")]
+          );
+          const allPictures = await db.queryParams(
+            "SELECT nom_photo as photo FROM bancs WHERE nom_photo != ''",
+            [req.get("x-auth")]
+          );
 
           res.status(200).json({
             global: {
               usersCount: usersCount[0].usersCount,
               benchCount: benchCount[0].benchCount,
               photosCount: photosCount[0].photosCount,
+              pictures: allPictures,
             },
             user: {
               benchCount: benchUser[0].benchCount,
               photosCount: photosUser[0].photosCount,
+              pictures: usersPictures,
               avgBench: {
                 full: avgBench[0].avgBench,
                 floor: Math.floor(avgBench[0].avgBench * 100) / 100,
