@@ -35,9 +35,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.raw());
 app.disable("etag"); // No caching
+app.use((req: any, res: any, next: any) => {
+  res.append("version", process.env.VERSION);
+  next();
+});
 
 app.get("/", function (req: any, res: any) {
-  res.status(200).json({ "greengo-server": { version: "1.0.0" } });
+  res.status(200).json({ "greengo-server": { version: process.env.VERSION } });
 });
 
 benches(app);
