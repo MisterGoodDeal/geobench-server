@@ -42,7 +42,7 @@ app.use((req: any, res: any, next: any) => {
 });
 
 app.get("/", function (req: Request, res: Response) {
-  res.status(200).json({ "greengo-server": { version: process.env.VERSION } });
+  res.status(200).json({ "geobench-server": { version: process.env.VERSION } });
 });
 
 benches(app);
