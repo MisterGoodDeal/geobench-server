@@ -1,3 +1,4 @@
+import { Request, Response } from "express";
 import { db } from "../db";
 import { log } from "../db/logger";
 import { AddBenchBody, AddCommentBody } from "../utils/benches";
@@ -24,7 +25,7 @@ export const benches = (app: any) => {
    * Route permettant de récupérer un JSON avec tous les bancs depuis la base de donnée
    * !! Nécessite l'authentification avec le header `x-auth` !!
    */
-  app.get("/bancs", async function (req: any, res: Res) {
+  app.get("/bancs", async function (req: Request, res: Response) {
     const benches: Banc[] = [];
     if (req.get("x-auth") === undefined) {
       res
@@ -32,7 +33,7 @@ export const benches = (app: any) => {
         .json(returnCode.unauthorized.payload);
     } else {
       try {
-        if (!(await user.exists(parseInt(req.get("x-auth"))))) {
+        if (!(await user.exists(parseInt(req.get("x-auth") ?? "")))) {
           res
             .status(returnCode.unknownUser.code)
             .json(returnCode.unknownUser.payload);
@@ -55,7 +56,7 @@ export const benches = (app: any) => {
           });
         });
         res.status(200).json(benches);
-      } catch (error) {
+      } catch (error: any) {
         log(`Erreur interne GET/bancs => ${error.message}`, req.get("x-auth"));
         res
           .status(returnCode.internalError.code)
@@ -68,14 +69,14 @@ export const benches = (app: any) => {
    * Route permettant de récupérer un JSON avec tous les bancs depuis la base de donnée
    * !! Nécessite l'authentification avec le header `x-auth` !!
    */
-  app.put("/banc/commentaire", async function (req: any, res: Res) {
+  app.put("/banc/commentaire", async function (req: Request, res: Response) {
     if (req.get("x-auth") === undefined) {
       res
         .status(returnCode.unauthorized.code)
         .json(returnCode.unauthorized.payload);
     } else {
       try {
-        if (!(await user.exists(parseInt(req.get("x-auth"))))) {
+        if (!(await user.exists(parseInt(req.get("x-auth") ?? "")))) {
           res
             .status(returnCode.unknownUser.code)
             .json(returnCode.unknownUser.payload);
@@ -105,7 +106,7 @@ export const benches = (app: any) => {
         }
 
         res.status(200).json({ status: "ok" });
-      } catch (error) {
+      } catch (error: any) {
         log(
           `Erreur interne PUT/banc/commentaire => ${error.message}`,
           req.get("x-auth")
@@ -121,7 +122,7 @@ export const benches = (app: any) => {
    * Route permettant d'ajouter un banc en base de donnée
    * !! Nécessite l'authentification avec le header `x-auth` !!
    */
-  app.post("/bancs", async function (req: any, res: Res) {
+  app.post("/bancs", async function (req: Request, res: Response) {
     const benches: Banc[] = [];
     if (req.get("x-auth") === undefined) {
       res
@@ -129,7 +130,7 @@ export const benches = (app: any) => {
         .json(returnCode.unauthorized.payload);
     } else {
       try {
-        if (!(await user.exists(parseInt(req.get("x-auth"))))) {
+        if (!(await user.exists(parseInt(req.get("x-auth") ?? "")))) {
           res
             .status(returnCode.unknownUser.code)
             .json(returnCode.unknownUser.payload);
@@ -174,7 +175,7 @@ export const benches = (app: any) => {
           );
           res.status(200).json(queryR);
         }
-      } catch (error) {
+      } catch (error: any) {
         log(`Erreur interne POST/bancs => ${error.message}`, req.get("x-auth"));
         res
           .status(returnCode.internalError.code)

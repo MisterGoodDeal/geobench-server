@@ -2,20 +2,15 @@ const env = require("dotenv").config();
 const mysql = require("mysql2/promise");
 
 async function queryWithoutParams(sql: string) {
-  try {    
+  try {
     const connection = await mysql.createConnection(config.db);
     const [results] = await connection.execute(sql);
-    connection.end()
+    connection.end();
     return results;
-  } catch (error) {
-    console.log('Config >', config);
-    console.log("MySQL error > ",error);
-    
+  } catch (error: any) {
+    console.log("Config >", config);
+    console.log("MySQL error > ", error);
   }
-  
-  
-
-  
 }
 async function queryWithParams(sql: string, params: any) {
   try {
@@ -23,9 +18,9 @@ async function queryWithParams(sql: string, params: any) {
     const [results] = await connection.execute(sql, params);
     connection.end();
     return results;
-  } catch (error) {
-    console.log('Config >', config);
-    console.log("MySQL error > ",error);
+  } catch (error: any) {
+    console.log("Config >", config);
+    console.log("MySQL error > ", error);
   }
 }
 

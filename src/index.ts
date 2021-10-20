@@ -1,3 +1,4 @@
+import { Request, Response } from "express";
 import { benches } from "./routes/benches";
 import { community } from "./routes/community";
 import { user } from "./routes/user";
@@ -40,7 +41,7 @@ app.use((req: any, res: any, next: any) => {
   next();
 });
 
-app.get("/", function (req: any, res: any) {
+app.get("/", function (req: Request, res: Response) {
   res.status(200).json({ "greengo-server": { version: process.env.VERSION } });
 });
 

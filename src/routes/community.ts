@@ -1,6 +1,7 @@
+import { Request, Response } from "express";
 import { db } from "../db";
 import { log } from "../db/logger";
-import { Res, returnCode } from "../utils/returnCodes";
+import { returnCode } from "../utils/returnCodes";
 import { user } from "../utils/user";
 const env = require("dotenv").config();
 
@@ -9,14 +10,14 @@ export const community = (app: any) => {
    * Route permettant de récupérer une image aléatoire d'un banc d'un utilisateur
    * !! Nécessite l'authentification avec le header `x-auth` !!
    */
-  app.get("/community", async function (req: any, res: Res) {
+  app.get("/community", async function (req: Request, res: Response) {
     if (req.get("x-auth") === undefined) {
       res
         .status(returnCode.unauthorized.code)
         .json(returnCode.unauthorized.payload);
     } else {
       try {
-        if (!(await user.exists(parseInt(req.get("x-auth"))))) {
+        if (!(await user.exists(parseInt(req.get("x-auth") ?? "")))) {
           res
             .status(returnCode.unknownUser.code)
             .json(returnCode.unknownUser.payload);
@@ -78,7 +79,7 @@ export const community = (app: any) => {
             },
           });
         }
-      } catch (error) {
+      } catch (error: any) {
         log(`Erreur interne GET/bancs => ${error.message}`, req.get("x-auth"));
         res
           .status(returnCode.internalError.code)

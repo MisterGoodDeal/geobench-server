@@ -1,3 +1,4 @@
+import { Request, Response } from "express";
 import { getLang } from "../constants/Lang";
 import { db } from "../db";
 import { log } from "../db/logger";
@@ -23,14 +24,14 @@ export const user = (app: any) => {
    * Route permettant de récupérer un JSON avec tous les bancs depuis la base de donnée
    * !! Nécessite l'authentification avec le header `x-auth` !!
    */
-  app.get("/user/info", async function (req: any, res: Res) {
+  app.get("/user/info", async function (req: Request, res: Response) {
     if (req.get("x-auth") === undefined) {
       res
         .status(returnCode.unauthorized.code)
         .json(returnCode.unauthorized.payload);
     } else {
       try {
-        if (!(await userUtils.exists(parseInt(req.get("x-auth"))))) {
+        if (!(await userUtils.exists(parseInt(req.get("x-auth") ?? "")))) {
           res
             .status(returnCode.unknownUser.code)
             .json(returnCode.unknownUser.payload);
@@ -55,7 +56,7 @@ export const user = (app: any) => {
           };
           res.status(200).json(userJson);
         }
-      } catch (error) {
+      } catch (error: any) {
         log(
           `Erreur interne GET/user/info => ${error.message}`,
           req.get("x-auth")
@@ -70,7 +71,7 @@ export const user = (app: any) => {
   /**
    * Route permettant d'enregistrer un nouvel utilisateur en base de donnée'
    */
-  app.post("/user/register", async function (req: any, res: Res) {
+  app.post("/user/register", async function (req: Request, res: Response) {
     const body: UserRegister = req.body;
     if (
       !body.hasOwnProperty("prenom") ||
@@ -138,7 +139,7 @@ export const user = (app: any) => {
           res
             .status(returnCode.userCreated.code)
             .json(returnCode.userCreated.payload);
-        } catch (error) {
+        } catch (error: any) {
           log(
             `Erreur interne POST/user/register => ${error.message}`,
             req.get("x-auth")
@@ -155,14 +156,14 @@ export const user = (app: any) => {
    * Route permettant de supprimer un utilisateur
    * !! Nécessite l'authentification avec le header `x-auth` !!
    */
-  app.post("/user/delete", async function (req: any, res: Res) {
+  app.post("/user/delete", async function (req: Request, res: Response) {
     if (req.get("x-auth") === undefined) {
       res
         .status(returnCode.unauthorized.code)
         .json(returnCode.unauthorized.payload);
     } else {
       try {
-        if (!(await userUtils.exists(parseInt(req.get("x-auth"))))) {
+        if (!(await userUtils.exists(parseInt(req.get("x-auth") ?? "")))) {
           res
             .status(returnCode.unknownUser.code)
             .json(returnCode.unknownUser.payload);
@@ -182,7 +183,7 @@ export const user = (app: any) => {
 
           res.status(200).json({ row, row2, row3 });
         }
-      } catch (error) {
+      } catch (error: any) {
         log(
           `Erreur interne POST/user/delete => ${error.message}`,
           req.get("x-auth")
@@ -197,7 +198,7 @@ export const user = (app: any) => {
   /**
    * Route permettant de connecter un utilisateur
    */
-  app.post("/user/login", async function (req: any, res: Res) {
+  app.post("/user/login", async function (req: Request, res: Response) {
     const body: UserLogin = req.body;
     if (!body.hasOwnProperty("login") || !body.hasOwnProperty("password")) {
       log(
@@ -231,7 +232,7 @@ export const user = (app: any) => {
   /**
    * Route permettant de demander la réinitialisation du mot de passe
    */
-  app.post("/user/reset", async function (req: any, res: Res) {
+  app.post("/user/reset", async function (req: Request, res: Response) {
     const body: UserResetPassword = req.body;
     if (!body.hasOwnProperty("lang") || !body.hasOwnProperty("email")) {
       log(
@@ -267,7 +268,7 @@ export const user = (app: any) => {
 
           res.status(200).json({ email: email, database: reqResetCode });
         }
-      } catch (error) {
+      } catch (error: any) {
         log(
           `Erreur interne GET/user/info => ${error.message}`,
           req.get("x-auth")
@@ -282,7 +283,7 @@ export const user = (app: any) => {
   /**
    * Route permettant de demander de check le code OTP et de modifier le mot de passe
    */
-  app.put("/user/updatePassword", async function (req: any, res: Res) {
+  app.put("/user/updatePassword", async function (req: Request, res: Response) {
     const body: UserCheckOTPAndReset = req.body;
     if (
       !body.hasOwnProperty("password") ||
@@ -317,7 +318,7 @@ export const user = (app: any) => {
           );
           res.status(200).json(response);
         }
-      } catch (error) {
+      } catch (error: any) {
         log(
           `Erreur interne PUT/user/updatePassword => ${error.message}`,
           req.get("x-auth")
@@ -333,7 +334,7 @@ export const user = (app: any) => {
    * Route permettant de modifier l'adresse email
    * !! Nécessite l'authentification avec le header `x-auth` !!
    */
-  app.put("/user/email", async function (req: any, res: Res) {
+  app.put("/user/email", async function (req: Request, res: Response) {
     const body: UserChangeEmail = req.body;
     if (req.get("x-auth") === undefined) {
       res
@@ -354,7 +355,7 @@ export const user = (app: any) => {
           [body.email, req.get("x-auth")]
         );
         res.status(200).json(response);
-      } catch (error) {
+      } catch (error: any) {
         log(
           `Erreur interne PUT/user/email => ${error.message}`,
           req.get("x-auth")
@@ -370,7 +371,7 @@ export const user = (app: any) => {
    * Route permettant de modifier le nom et le prénom
    * !! Nécessite l'authentification avec le header `x-auth` !!
    */
-  app.put("/user/fullname", async function (req: any, res: Res) {
+  app.put("/user/fullname", async function (req: Request, res: Response) {
     const body: UserChangeFullname = req.body;
     if (req.get("x-auth") === undefined) {
       res
@@ -394,7 +395,7 @@ export const user = (app: any) => {
           [body.firstname, body.lastname, req.get("x-auth")]
         );
         res.status(200).json(response);
-      } catch (error) {
+      } catch (error: any) {
         log(
           `Erreur interne PUT/user/fullname => ${error.message}`,
           req.get("x-auth")
@@ -410,7 +411,7 @@ export const user = (app: any) => {
    * Route permettant de mettre à jour les favoris des utilisateurs
    * !! Nécessite l'authentification avec le header `x-auth` !!
    */
-  app.put("/user/favoris", async function (req: any, res: Res) {
+  app.put("/user/favoris", async function (req: Request, res: Response) {
     const body: UserChangeFav = req.body;
     if (req.get("x-auth") === undefined) {
       res
@@ -431,7 +432,7 @@ export const user = (app: any) => {
           [body.favoris, req.get("x-auth")]
         );
         res.status(200).json(response);
-      } catch (error) {
+      } catch (error: any) {
         log(
           `Erreur interne PUT/user/fullname => ${error.message}`,
           req.get("x-auth")
