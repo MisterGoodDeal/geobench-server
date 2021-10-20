@@ -4,7 +4,7 @@
   "description": "API server for Geobench",
   "main": "index.js",
   "scripts": {
-    "start": "npm run build && node build/index.js -r dotenv/config",
+    "start": "npm run build && node build/geobench-server.js -r dotenv/config",
     "start:dev": "nodemon -r dotenv/config",
     "build": "rimraf ./build && tsc && mv ./build/index.js ./build/geobench-server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
