@@ -119,7 +119,7 @@ export const user = (app: any) => {
           mail: body.email,
           mdp: hashed,
           favoris: "[]",
-          reset_key: generateRandomString(32),
+          reset_key: generateRandomString(16),
         };
         try {
           const query = await db.queryParams(
