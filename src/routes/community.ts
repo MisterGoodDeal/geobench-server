@@ -56,17 +56,27 @@ export const community = (app: any) => {
             [req.get("x-auth")]
           );
 
+          const tempCommunityPhoto: string[] = [];
+          allPictures.map((r: { photo: string }) => {
+            tempCommunityPhoto.push(r.photo);
+          });
+
+          const tempUserPhoto: string[] = [];
+          usersPictures.map((r: { photo: string }) => {
+            tempUserPhoto.push(r.photo);
+          });
+
           res.status(200).json({
             global: {
               usersCount: usersCount[0].usersCount,
               benchCount: benchCount[0].benchCount,
               photosCount: photosCount[0].photosCount,
-              pictures: allPictures,
+              pictures: tempCommunityPhoto,
             },
             user: {
               benchCount: benchUser[0].benchCount,
               photosCount: photosUser[0].photosCount,
-              pictures: usersPictures,
+              pictures: tempUserPhoto,
               avgBench: {
                 full: avgBench[0].avgBench,
                 floor: Math.floor(avgBench[0].avgBench * 100) / 100,
