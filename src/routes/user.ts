@@ -19,7 +19,7 @@ import {
   UserResetPassword,
 } from "../utils/user";
 
-export const user = (app: any) => {
+const user = (app: any) => {
   /**
    * Route permettant de récupérer un JSON avec tous les bancs depuis la base de donnée
    * !! Nécessite l'authentification avec le header `x-auth` !!
@@ -123,7 +123,7 @@ export const user = (app: any) => {
         };
         try {
           const query = await db.queryParams(
-            "INSERT INTO `users`(`prenom`, `nom`, `mail`, `pseudo`, `mdp`, `favoris`, `reset_key`) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO `users`(`prenom`, `nom`, `mail`, `pseudo`, `mdp`, `favoris`, `reset_key`, `platform`) VALUES (?, ?, ?, ?, ?, ?, ?, null)",
             [
               user.prenom,
               user.nom,
@@ -208,14 +208,28 @@ export const user = (app: any) => {
       res
         .status(returnCode.missingParameters.code)
         .json(returnCode.missingParameters.payload);
+    } else if (
+      body.platform !== "ios" &&
+      body.platform !== "android" &&
+      body.platform !== undefined
+    ) {
+      res
+        .status(returnCode.platformNotSupported.code)
+        .json(returnCode.platformNotSupported.payload);
     } else {
       const isUser = await userUtils.existsRegister(body.login, body.login);
       if (isUser.email || isUser.username) {
         const user = await userUtils.info(body.login);
         const passwordMatch = await password.verify(body.password, user.mdp!);
         if (passwordMatch) {
-          delete user.mdp;
-          res.status(200).json(user);
+          await db.queryParams(
+            "UPDATE `users` SET `platform` = ? WHERE `id` = ?",
+            [body.platform ?? null, user.id]
+          );
+          const userInfo = await userUtils.info(body.login);
+
+          delete userInfo.mdp;
+          res.status(200).json(userInfo);
         } else {
           res
             .status(returnCode.user.wrongPassword.code)
@@ -444,3 +458,5 @@ export const user = (app: any) => {
     }
   });
 };
+
+export default user;

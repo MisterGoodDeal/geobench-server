@@ -1,6 +1,6 @@
 {
   "name": "geobench-server",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "API server for Geobench",
   "main": "index.js",
   "scripts": {
@@ -21,8 +21,10 @@
     "@types/mysql": "^2.15.18",
     "bcrypt": "^5.0.1",
     "express": "^4.17.1",
+    "fs": "^0.0.1-security",
     "mysql2": "^2.2.5",
     "nodemailer": "^6.6.2",
+    "path": "^0.12.7",
     "prettier": "^2.3.1"
   },
   "devDependencies": {

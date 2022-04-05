@@ -32,7 +32,7 @@ export const sendMail = async (
     host: "smtp.ionos.fr",
     port: 465,
     auth: {
-      user: "geobench@turtletv.fr",
+      user: "geobench@turtlecorp.fr",
       pass: "&7@2H9f%B*hbe9iAC$&5",
     },
   });

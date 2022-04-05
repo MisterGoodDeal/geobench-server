@@ -20,7 +20,7 @@ interface Banc {
   date: Date;
 }
 
-export const benches = (app: any) => {
+const benches = (app: any) => {
   /**
    * Route permettant de récupérer un JSON avec tous les bancs depuis la base de donnée
    * !! Nécessite l'authentification avec le header `x-auth` !!
@@ -184,3 +184,5 @@ export const benches = (app: any) => {
     }
   });
 };
+
+export default benches;

@@ -65,6 +65,9 @@ export interface User {
   mdp?: string;
   favoris: string;
   reset_key: string;
+  platform?: string;
+  external_user?: string;
+  external_user_id?: number;
 }
 
 export interface UserRegister {
@@ -75,9 +78,28 @@ export interface UserRegister {
   password: string;
 }
 
+export interface UserApple {
+  prenom?: string;
+  nom?: string;
+  email?: string;
+  identityToken: string;
+  authorizationCode: string;
+  user: string;
+  nonce: string;
+}
+
+export interface AppleUserDb {
+  id: number;
+  user_id: string;
+  identify_token: string;
+  authorization_code: string;
+  nonce: string;
+}
+
 export interface UserLogin {
   login: string;
   password: string;
+  platform?: "ios" | "android";
 }
 
 interface CheckUserRegisterExist {

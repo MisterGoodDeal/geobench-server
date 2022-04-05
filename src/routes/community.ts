@@ -5,7 +5,7 @@ import { returnCode } from "../utils/returnCodes";
 import { user } from "../utils/user";
 const env = require("dotenv").config();
 
-export const community = (app: any) => {
+const community = (app: any) => {
   /**
    * Route permettant de récupérer une image aléatoire d'un banc d'un utilisateur
    * !! Nécessite l'authentification avec le header `x-auth` !!
@@ -98,3 +98,5 @@ export const community = (app: any) => {
     }
   });
 };
+
+export default community;

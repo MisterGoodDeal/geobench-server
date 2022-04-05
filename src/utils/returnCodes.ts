@@ -6,6 +6,13 @@ export const returnCode = {
       message: "Missing parameters!",
     },
   },
+  platformNotSupported: {
+    code: 400,
+    payload: {
+      title: "platform_not_supported",
+      message: "Platform not supported!",
+    },
+  },
   wrongOTP: {
     code: 400,
     payload: {

@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
-import { benches } from "./routes/benches";
-import { community } from "./routes/community";
-import { user } from "./routes/user";
+import { getRoutes } from "./services/routes";
+import { webServices } from "./services/web";
 const env = require("dotenv").config();
 
 const fs = require("fs");
@@ -10,26 +9,6 @@ const https = require("https");
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
-
-// Certbot Certifiates
-const privateKey = fs.readFileSync(
-  "/etc/letsencrypt/live/api.geobench.turtlecorp.fr/privkey.pem",
-  "utf8"
-);
-const certificate = fs.readFileSync(
-  "/etc/letsencrypt/live/api.geobench.turtlecorp.fr/cert.pem",
-  "utf8"
-);
-const ca = fs.readFileSync(
-  "/etc/letsencrypt/live/api.geobench.turtlecorp.fr/chain.pem",
-  "utf8"
-);
-
-const credentials = {
-  key: privateKey,
-  cert: certificate,
-  ca: ca,
-};
 
 app.use(express.static(__dirname, { dotfiles: "allow" }));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -45,18 +24,15 @@ app.get("/", function (req: Request, res: Response) {
   res.status(200).json({ "geobench-server": { version: process.env.VERSION } });
 });
 
-benches(app);
-user(app);
-community(app);
-
-// Starting both http & https servers
-const httpServer = http.createServer(app);
-const httpsServer = https.createServer(credentials, app);
-
-httpServer.listen(80, () => {
-  console.log("HTTP Server running on port 80");
+const routes = getRoutes();
+routes.forEach((route: string) => {
+  import("./routes/" + route).then((r: any) => {
+    r.default(app);
+  });
 });
 
-httpsServer.listen(443, () => {
-  console.log("HTTPS Server running on port 443");
+webServices({
+  app: app,
+  usingHttps: true,
+  httpsDomain: "api.geobench.turtlecorp.fr",
 });
