@@ -78,6 +78,23 @@ export interface UserRegister {
   password: string;
 }
 
+export interface UserGoogle {
+  idToken: string;
+  serverAuthCode: string;
+  idUser: string;
+  givenName: string;
+  familyName: string;
+  email: string;
+}
+
+export interface GoogleUserDb {
+  id: number;
+  idToken: string;
+  serverAuthCode: string;
+  idUser: string;
+  created_at: Date;
+}
+
 export interface UserApple {
   prenom?: string;
   nom?: string;
@@ -94,6 +111,7 @@ export interface AppleUserDb {
   identify_token: string;
   authorization_code: string;
   nonce: string;
+  created_at: Date;
 }
 
 export interface UserLogin {

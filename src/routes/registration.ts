@@ -7,9 +7,11 @@ import { password } from "../utils/password";
 import { Res, returnCode } from "../utils/returnCodes";
 import {
   AppleUserDb,
+  GoogleUserDb,
   User,
   user as userUtils,
   UserApple,
+  UserGoogle,
   UserRegister,
 } from "../utils/user";
 
@@ -159,7 +161,7 @@ const registration = (app: any) => {
 
             delete user[0].mdp;
 
-            res.status(200).json(user[0]);
+            res.status(201).json(user[0]);
           } else {
             res
               .status(returnCode.internalError.code)
@@ -181,6 +183,105 @@ const registration = (app: any) => {
         delete user[0].mdp;
 
         res.status(200).json(user[0]);
+      }
+    }
+  });
+
+  /**
+   * Handle "Login with Google"
+   */
+  app.post("/user/google", async function (req: Request, res: Response) {
+    const body: UserGoogle = req.body;
+    if (
+      !body.idToken ||
+      !body.serverAuthCode ||
+      !body.idUser ||
+      !body.givenName ||
+      !body.familyName ||
+      !body.email
+    ) {
+      res
+        .status(returnCode.missingParameters.code)
+        .json(returnCode.missingParameters.payload);
+    } else {
+      // Check if the user exists
+      const userExists: User[] = await db.queryParams(
+        "SELECT * FROM `users` WHERE `external_user` != ? AND `mail` = ?",
+        ["google", body.email]
+      );
+      console.log(userExists);
+
+      if (userExists.length > 0) {
+        res
+          .status(returnCode.alreadyUser.mail.code)
+          .json(returnCode.alreadyUser.mail.payload);
+      } else {
+        // Check if the google user exists
+        const googleUserExists: GoogleUserDb[] = await db.queryParams(
+          "SELECT * FROM `users` WHERE `external_user` = ? AND mail = ?",
+          ["google", body.email]
+        );
+        if (googleUserExists.length === 0) {
+          // The user doesn't exist, we create it
+          const addGoogleUser: MySQLResponse = await db.queryParams(
+            "INSERT INTO `geobench`.`google_users` (`idUser`,`serverAuthCode`,`idToken`) VALUES (?, ?, ?);",
+            [body.idUser, body.serverAuthCode, body.idToken]
+          );
+
+          const pseudo = `${body.email.split("@")[0]}.${
+            body.email.split("@")[1].split(".")[0]
+          }`;
+
+          const addUser: MySQLResponse = await db.queryParams(
+            "INSERT INTO `geobench`.`users` (`prenom`,`nom`,`mail`,`pseudo`,`mdp`,`favoris`,`reset_key`,`platform`, `external_user`, `external_user_id`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            [
+              body.givenName,
+              body.familyName,
+              body.email,
+              pseudo,
+              "",
+              "[]",
+              "",
+              "ios",
+              "google",
+              addGoogleUser.insertId,
+            ]
+          );
+          if (addUser.affectedRows === 1) {
+            // get google user
+            const googleUser: GoogleUserDb[] = await db.queryParams(
+              "SELECT id FROM `google_users` WHERE `idUser` = ?",
+              [body.idUser]
+            );
+
+            const user: User[] = await db.queryParams(
+              "SELECT * FROM `users` WHERE `external_user_id` = ?",
+              [googleUser[0].id]
+            );
+
+            delete user[0].mdp;
+
+            res.status(201).json(user[0]);
+          } else {
+            res
+              .status(returnCode.internalError.code)
+              .json(returnCode.internalError.payload);
+          }
+        } else {
+          const googleUser: GoogleUserDb[] = await db.queryParams(
+            "SELECT id FROM `google_users` WHERE `idUser` = ?",
+            [body.idUser]
+          );
+
+          const user: User[] = await db.queryParams(
+            "SELECT * FROM `users` WHERE `external_user_id` = ?",
+            [googleUser[0].id]
+          );
+
+          delete user[0].mdp;
+
+          res.status(200).json(user[0]);
+        }
       }
     }
   });
